@@ -209,10 +209,13 @@ exports.get_teams = function (req, res, next) {
 
 			data = result;
 
+			async_queue = result.length;
+
 			result.forEach(function (a, i) {
 				data[i].hackathon = data[i].hackathons[0];
 				delete data[i].hackathons;
 
+				logger.log('verbose', 'Getting tech stacks');
 				mongo.collection('tech_stacks')
 					.find(
 						{_id : {$in : a.hackathon.tech_stacks}},
@@ -224,8 +227,7 @@ exports.get_teams = function (req, res, next) {
 						});
 					});
 
-
-				async_queue++;
+				logger.log('verbose', 'Getting hackers');
 				mongo.collection('hackers')
 					.find(
 						{_id : {$in : a.hackers}},
@@ -240,30 +242,30 @@ exports.get_teams = function (req, res, next) {
 					.toArray(function (err, result) {
 						data[i].hackers = result;
 
+						logger.log('verbose', 'Getting badges');
 						result.forEach(function (b, j) {
 							mongo.collection('badges')
 								.find(
 									{_id : {$in : b.badges}},
 									{_id : 0}
 								)
-								.toArray(function (_err, result) {
-									b.badges = result;
-									data[i].hackers[j] = b;
-									send_response(err || _err, result);
+								.toArray(function (_err, _result) {
+									data[i].hackers[j].badges = _result;
+									send_response(err || _err);
 								});
 						});
 					});
 			});
 		},
 
-		send_response = function (err, result) {
+		send_response = function (err) {
 			if (err) {
 				logger.log('warn', 'Error getting badges');
 				return next(err);
 			}
 
-
 			if (--async_queue === 0) {
+				logger.log('info', 'Teams successfully retrieved');
 				res.send(data);
 			}
 		};
