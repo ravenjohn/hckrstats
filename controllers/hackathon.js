@@ -65,6 +65,10 @@ exports.get_by_id = function (req, res, next) {
 				return next(err);
 			}
 
+			if (!result) {
+				return next('Hackathon not found');
+			}
+
 			data.hackathon = result;
 
 
