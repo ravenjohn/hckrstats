@@ -127,7 +127,6 @@ exports.get_by_id = function (req, res, next) {
 					{
 						'rank' : 1,
 						'hackers' : 1,
-						'hackathons.hackathon_id' : 1,
 						'hackathons.team_name' : 1,
 						'hackathons.app_name' : 1,
 						'hackathons.points' : 1,
@@ -150,6 +149,9 @@ exports.get_by_id = function (req, res, next) {
 				logger.log('verbose', 'Getting winning team hackers');
 
 				data.teams.forEach(function (a, i) {
+					data.teams[i].hackathon = data.teams[i].hackathons[0];
+					delete data.teams[i].hackathons;
+
 					async_queue++;
 					mongo.collection('hackers')
 						.find(
@@ -182,6 +184,7 @@ exports.get_by_id = function (req, res, next) {
 
 	start();
 };
+
 
 exports.get_teams = function (req, res, next) {
 	var data = {},
