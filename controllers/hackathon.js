@@ -123,6 +123,7 @@ exports.get_by_id = function (req, res, next) {
 					{
 						'rank' : 1,
 						'hackers' : 1,
+						'hackathons.hackathon_id' : 1,
 						'hackathons.team_name' : 1,
 						'hackathons.app_name' : 1,
 						'hackathons.points' : 1,
