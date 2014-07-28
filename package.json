@@ -1,0 +1,38 @@
+{
+  "name": "HckrStats",
+  "version": "0.0.0",
+  "description": "HckrStats",
+  "main": "server.js",
+  "dependencies": {
+    "express": "~4.0.0",
+    "winston": "~0.7.2",
+    "nodemon": "~1.0.15",
+    "body-parser": "~1.0.2",
+    "compression": "~1.0.1",
+    "method-override": "~1.0.0",
+    "morgan": "~1.0.0",
+    "cookie-parser": "~1.0.1",
+    "response-time": "~1.0.0",
+    "mysql": "^2.2.0",
+    "moment": "^2.6.0"
+  },
+  "scripts": {
+    "start": "nodemon server.js",
+    "test": "make test",
+    "dev-test": "mocha tests -R spec -t 5000 -s 0 --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ravenjohn/hckrstats"
+  },
+  "keywords": [
+    "hckrstats",
+    "hacker",
+    "stats"
+  ],
+  "author": "Evie Hackers",
+  "bugs": {
+    "url": "https://github.com/ravenjohn/hckrstats/issues"
+  },
+  "homepage": "http://hckrstats.com"
+}
