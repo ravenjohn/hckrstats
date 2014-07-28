@@ -1,9 +1,11 @@
 var loc			= __dirname + '/../controllers/',
-	user 		= require(loc + 'user');
+	hackathon 	= require(loc + 'hackathon');
 
 module.exports	= function (router, logger) {
 
 	router.del 	= router.delete;
+
+	router.get('/hackathons', hackathon.get_list);
 
 
 	router.all('*', function (req, res, next) {

@@ -3,7 +3,7 @@ var express	= require('express'),
     logger	= require(__dirname + '/lib/logger'),
     app		= express();
 
-logger.log('info', 'Initializing HckrStas! Backend on', process.env['NODE_ENV'], 'mode');
+logger.log('info', 'Initializing HckrStats back end on', process.env['NODE_ENV'], 'mode');
 
 app.disable('x-powered-by');
 
