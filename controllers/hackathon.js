@@ -3,6 +3,7 @@ var config         = require(__dirname + '/../config/config'),
     mongo          = require(__dirname + '/../lib/mongoskin');
     logger         = require(__dirname + '/../lib/logger'),
 
+
 exports.get_list = function (req, res, next) {
 	var start = function () {
 
@@ -19,6 +20,7 @@ exports.get_list = function (req, res, next) {
 				.sort({start_date : -1})
 				.toArray(send_response);
 		},
+
 		send_response = function (err, result) {
 			if (err) {
 				logger.log('warn', 'Error on getting list of hackathons');
@@ -31,6 +33,7 @@ exports.get_list = function (req, res, next) {
 
 	start();
 };
+
 
 exports.get_by_id = function (req, res, next) {
 	var data = {},
@@ -57,6 +60,7 @@ exports.get_by_id = function (req, res, next) {
 					get_judges_teams_sponsors
 				);
 		},
+
 		get_judges_teams_sponsors = function (err, result) {
 			var i;
 
@@ -129,12 +133,13 @@ exports.get_by_id = function (req, res, next) {
 						'hackathons.points' : 1,
 						'hackathons.awards' : 1,
 					})
-				.sort({'hackathons.points' : 1})
+				.sort({'hackathons.points' : -1})
 				.toArray(function (err, result) {
 					data.teams = result;
 					merge_async_calls(err, result);
 				});
 		},
+
 		merge_async_calls = function (err, result) {
 			if (err) {
 				logger.log('warn', 'Error getting things');
@@ -162,13 +167,98 @@ exports.get_by_id = function (req, res, next) {
 						});
 				});
 			}
-
 		},
+
 		send_response = function (err, result) {
 			if (err) {
 				logger.log('warn', 'Error getting hackers');
 				return next(err);
 			}
+
+			if (--async_queue === 0) {
+				res.send(data);
+			}
+		};
+
+	start();
+};
+
+exports.get_teams = function (req, res, next) {
+	var data = {},
+		async_queue = 0,
+
+		start = function () {
+			logger.log('info', 'Getting teams');
+
+			mongo.collection('teams')
+				.find({
+						hackathons : {$elemMatch : {hackathon_id : req.params.id}}
+					},
+					{_id : 0})
+				.sort({'hackathons.points' : -1})
+				.toArray(get_hackers_and_stacks);
+		},
+
+		get_hackers_and_stacks = function (err, result) {
+			if (err) {
+				return next(err);
+			}
+
+			data = result;
+
+			result.forEach(function (a, i) {
+				data[i].hackathon = data[i].hackathons[0];
+				delete data[i].hackathons;
+
+				mongo.collection('tech_stacks')
+					.find(
+						{_id : {$in : a.hackathon.tech_stacks}},
+						{_id : 0}
+					)
+					.toArray(function (err, result) {
+						data[i].hackathon.tech_stacks = result.map(function (a) {
+							return a.name;
+						});
+					});
+
+
+				async_queue++;
+				mongo.collection('hackers')
+					.find(
+						{_id : {$in : a.hackers}},
+						{
+							_id : 0,
+							name : 1,
+							image : 1,
+							username : 1,
+							badges : 1
+						}
+					)
+					.toArray(function (err, result) {
+						data[i].hackers = result;
+
+						result.forEach(function (b, j) {
+							mongo.collection('badges')
+								.find(
+									{_id : {$in : b.badges}},
+									{_id : 0}
+								)
+								.toArray(function (_err, result) {
+									b.badges = result;
+									data[i].hackers[j] = b;
+									send_response(err || _err, result);
+								});
+						});
+					});
+			});
+		},
+
+		send_response = function (err, result) {
+			if (err) {
+				logger.log('warn', 'Error getting badges');
+				return next(err);
+			}
+
 
 			if (--async_queue === 0) {
 				res.send(data);

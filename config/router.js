@@ -7,6 +7,7 @@ module.exports	= function (router, logger) {
 
 	router.get('/hackathons', hackathon.get_list);
 	router.get('/hackathon/:id', hackathon.get_by_id);
+	router.get('/hackathon/:id/teams', hackathon.get_teams);
 
 
 	router.all('*', function (req, res, next) {
