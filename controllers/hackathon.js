@@ -194,10 +194,14 @@ exports.get_teams = function (req, res, next) {
 			logger.log('info', 'Getting teams');
 
 			mongo.collection('teams')
-				.find({
-						hackathons : {$elemMatch : {hackathon_id : req.params.id}}
+				.find(
+					{
+						hackathons : {
+							$elemMatch : {hackathon_id : req.params.id}
+						}
 					},
-					{_id : 0})
+					{_id : 0}
+				)
 				.sort({'hackathons.points' : -1})
 				.toArray(get_hackers_and_stacks);
 		},

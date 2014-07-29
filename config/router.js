@@ -1,5 +1,6 @@
 var loc			= __dirname + '/../controllers/',
-	hackathon 	= require(loc + 'hackathon');
+	hackathon 	= require(loc + 'hackathon'),
+	team 		= require(loc + 'team');
 
 module.exports	= function (router, logger) {
 
@@ -9,6 +10,7 @@ module.exports	= function (router, logger) {
 	router.get('/hackathon/:id', hackathon.get_by_id);
 	router.get('/hackathon/:id/teams', hackathon.get_teams);
 
+	router.get('/team/:id', team.get_by_id);
 
 	router.all('*', function (req, res, next) {
 		logger.log('debug', '--REQUEST BODY--', req.body);
