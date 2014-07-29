@@ -77,7 +77,10 @@ exports.get_by_id = function (req, res, next) {
 
 
 			logger.log('verbose', 'Getting judges');
-			async_queue++;
+
+			temp = result.sponsors_and_partners;
+			async_queue = 2 + Object.keys(temp).length;
+
 			mongo.collection('judges')
 				.find(
 					{_id : {$in : result.judges}},
@@ -95,10 +98,8 @@ exports.get_by_id = function (req, res, next) {
 				});
 
 			logger.log('verbose', 'Getting sponsors and partners');
-			temp = result.sponsors_and_partners;
 			for (i in temp) {
 				(function (i) {
-					async_queue++;
 					mongo.collection('sponsors_and_partners')
 						.find(
 							{_id : {$in : temp[i]}},
@@ -118,7 +119,6 @@ exports.get_by_id = function (req, res, next) {
 
 
 			logger.log('verbose', 'Getting winning teams');
-			async_queue++;
 			mongo.collection('teams')
 				.find({
 						hackathons : {$elemMatch : {hackathon_id : data.hackathon._id}},
@@ -148,11 +148,11 @@ exports.get_by_id = function (req, res, next) {
 			if (--async_queue === 0) {
 				logger.log('verbose', 'Getting winning team hackers');
 
+				async_queue = data.teams.length;
 				data.teams.forEach(function (a, i) {
 					data.teams[i].hackathon = data.teams[i].hackathons[0];
 					delete data.teams[i].hackathons;
 
-					async_queue++;
 					mongo.collection('hackers')
 						.find(
 							{_id : {$in : a.hackers}},
