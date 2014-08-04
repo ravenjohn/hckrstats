@@ -1,4 +1,5 @@
 var loc			= __dirname + '/../controllers/',
+	leaderboard	= require(loc + 'leaderboard'),
 	hackathon 	= require(loc + 'hackathon'),
 	hacker 		= require(loc + 'hacker'),
 	team 		= require(loc + 'team');
@@ -6,6 +7,12 @@ var loc			= __dirname + '/../controllers/',
 module.exports	= function (router, logger) {
 
 	router.del 	= router.delete;
+
+	router.all('*', function (req, res, next) {
+		logger.log('debug', '--REQUEST BODY--', req.body);
+		logger.log('debug', '--REQUEST QUERY--', req.query);
+		next();
+	});
 
 	router.get('/hackathons', hackathon.get_list);
 	router.get('/hackathon/:id', hackathon.get_by_id);
@@ -15,11 +22,7 @@ module.exports	= function (router, logger) {
 
 	router.get('/hacker/:id', hacker.get_by_id);
 
-	router.all('*', function (req, res, next) {
-		logger.log('debug', '--REQUEST BODY--', req.body);
-		logger.log('debug', '--REQUEST QUERY--', req.query);
-		next();
-	});
+	router.get('/leaderboard/teams', leaderboard.teams);
 
 	router.all('*', function (req, res) {
 		res.send(404, {message : 'Nothing to do here.'});
