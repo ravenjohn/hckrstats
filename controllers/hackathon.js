@@ -1,7 +1,7 @@
 var config         = require(__dirname + '/../config/config'),
     util           = require(__dirname + '/../helpers/util'),
-    mongo          = require(__dirname + '/../lib/mongoskin');
-    logger         = require(__dirname + '/../lib/logger'),
+    mongo          = require(__dirname + '/../lib/mongoskin'),
+    logger         = require(__dirname + '/../lib/logger');
 
 
 exports.get_list = function (req, res, next) {

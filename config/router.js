@@ -1,5 +1,6 @@
 var loc			= __dirname + '/../controllers/',
 	hackathon 	= require(loc + 'hackathon'),
+	hacker 		= require(loc + 'hacker'),
 	team 		= require(loc + 'team');
 
 module.exports	= function (router, logger) {
@@ -11,6 +12,8 @@ module.exports	= function (router, logger) {
 	router.get('/hackathon/:id/teams', hackathon.get_teams);
 
 	router.get('/team/:id', team.get_by_id);
+
+	router.get('/hacker/:id', hacker.get_by_id);
 
 	router.all('*', function (req, res, next) {
 		logger.log('debug', '--REQUEST BODY--', req.body);
